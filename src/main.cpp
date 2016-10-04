@@ -154,8 +154,14 @@ bool setupGLObjects(ShadeConfig& config, const char* shaderFile) {
         return false;
     }
     config.fragmentShader = new Shader;
-    if(!config.fragmentShader->compile(GL_FRAGMENT_SHADER, 0, frag_shader, "<builtin fragment>")) {
-        return false;
+    if(shaderFile) {
+        if(!config.fragmentShader->compile(GL_FRAGMENT_SHADER, shaderFile)) {
+            return false;
+        }
+    } else {
+        if(!config.fragmentShader->compile(GL_FRAGMENT_SHADER, 0, frag_shader, "<builtin fragment>")) {
+            return false;
+        }
     }
 
     config.program = new Program(config.vertexShader, config.fragmentShader);
