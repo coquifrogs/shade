@@ -1,7 +1,9 @@
 #version 330
+uniform float Time;
 in vec2 Frag_UV;
 layout(location = 0) out vec4 Out_Color;
 void main()
 {
-   Out_Color = vec4(sin(Frag_UV.x*60), cos(Frag_UV.y*60), 0.0, 1.0);
+   vec2 offset = Frag_UV + Time * 0.1;
+   Out_Color = vec4(sin(offset.x*60), cos(offset.y*40), 0.6, 1.0);
 }

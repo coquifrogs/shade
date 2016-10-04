@@ -72,6 +72,7 @@ public:
 	bool link() const;
 
 	void use() const;
+
 private:
 	const Shader* _vertex;
 	const Shader* _fragment;

@@ -60,6 +60,8 @@ int main(int argc, const char* argv[]) {
 
     setupGLObjects(shadeConfig, shaderFile);
 
+    GLint timeLocation = glGetUniformLocation(shadeConfig.program->getID(), "Time");
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -73,6 +75,11 @@ int main(int argc, const char* argv[]) {
         //ImGui::Text("Hello, world!");
 
         shadeConfig.program->use();
+
+        if (timeLocation != -1) {
+           glUniform1f(timeLocation, glfwGetTime());
+        }
+
         CHECK_GL(glBindVertexArray(shadeConfig.vao));
         CHECK_GL(glEnableVertexAttribArray(0));
         CHECK_GL(glEnableVertexAttribArray(1));
