@@ -1,0 +1,18 @@
+[submodule "3rdparty/stb"]
+	path = 3rdparty/stb
+	url = https://github.com/nothings/stb.git
+[submodule "3rdparty/glfw"]
+	path = 3rdparty/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "3rdparty/glm"]
+	path = 3rdparty/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "3rdparty/imgui"]
+	path = 3rdparty/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "3rdparty/gl3w"]
+	path = 3rdparty/gl3w
+	url = https://github.com/skaslev/gl3w.git
+[submodule "3rdparty/loguru"]
+	path = 3rdparty/loguru
+	url = https://github.com/emilk/loguru.git
