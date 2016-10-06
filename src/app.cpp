@@ -13,7 +13,7 @@ ShadeApp::ShadeApp() {
 	_builtinVertexShader = nullptr;
 	_builtinDefaultShader = nullptr;
 	_builtinErrorShader = nullptr;
-
+	_currentShaderFile = nullptr;
     _showFramerate = true;
 }
 

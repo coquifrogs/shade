@@ -1,9 +1,14 @@
 /* Rudimentary cross-platform (when completed) file modification polling */
 
+#if defined(_WIN32)
+#include <windows.h>
+#endif
+
 namespace fwatch {
 
 #if defined(_WIN32)
-	#pragma error Polling not yet implemented on Windows
+	typedef struct _FILETIME Timestamp;
+	const Timestamp ZERO_TIMESTAMP = {0,0};
 #else
 	#include <sys/stat.h>
 	#include <sys/time.h>
