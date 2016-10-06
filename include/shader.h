@@ -38,6 +38,7 @@ inline void __checkGLError(const char* stmt, const char* fname, int line) {
 
 class Shader {
 public:
+	~Shader() { if(_id != 0) CHECK_GL(glDeleteShader(_id)); }
 	bool compile(GLenum shaderType, const std::string& sourceFile);
 	bool compile(GLenum shaderType, GLint size, const GLchar* data, const char* filename);
 	GLuint getID() const {
@@ -54,6 +55,8 @@ public:
 		CHECK_GL(glAttachShader(_id, vertex->getID()));
 		CHECK_GL(glAttachShader(_id, fragment->getID()));
 	}
+
+	~Program() { if(_id != 0) CHECK_GL(glDeleteProgram(_id)); }
 
 	GLuint getID() const {
 		return _id;

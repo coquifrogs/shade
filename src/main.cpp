@@ -23,6 +23,8 @@ static void error_callback(int error, const char* description) {
 
 GLFWwindow* setupGLFW();
 bool setupGLObjects(ShadeConfig& config, const char* shaderFile);
+bool loadErrorShader(ShadeConfig& config);
+bool loadShader(ShadeConfig& config, const char* shaderFile);
 void printUsage();
 
 int main(int argc, const char* argv[]) {
@@ -62,17 +64,22 @@ int main(int argc, const char* argv[]) {
 
     GLint timeLocation = glGetUniformLocation(shadeConfig.program->getID(), "Time");
 
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         ImGui_ImplGlfwGL3_NewFrame();
 
         ////////// BEGIN FRAME ///////////
 
-        /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        //ImGui::Text("Hello, world!");
+        ImGui::BeginMainMenuBar();
+        if(ImGui::BeginMenu("File")) {
+            if(ImGui::MenuItem("Reload", "CTRL+R")) {
+                loadShader(shadeConfig, shaderFile);
+            }
+            ImGui::EndMenu();
+        }
+        
+        ImGui::EndMainMenuBar();
 
         shadeConfig.program->use();
 
@@ -136,6 +143,17 @@ const GLchar *frag_shader =
         }
     )raw";
 
+const GLchar *error_frag_shader =
+    R"raw(
+        #version 330
+        in vec2 Frag_UV;
+        layout(location = 0) out vec4 Out_Color;
+        void main()
+        {
+           Out_Color = vec4(1.0, 0.0, 1.0, 1.0);
+        }
+    )raw";
+
 bool setupGLObjects(ShadeConfig& config, const char* shaderFile) {
     glGenVertexArrays(1, &config.vao);
     glBindVertexArray(config.vao);
@@ -156,33 +174,95 @@ bool setupGLObjects(ShadeConfig& config, const char* shaderFile) {
     CHECK_GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, config.indexBuffer));
     CHECK_GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(GLint), _quadIndices, GL_STATIC_DRAW));
 
-    config.vertexShader = new Shader;
-    if(!config.vertexShader->compile(GL_VERTEX_SHADER, 0, vertex_shader, "<builtin vertex>")) {
-        return false;
-    }
-    config.fragmentShader = new Shader;
-    if(shaderFile) {
-        if(!config.fragmentShader->compile(GL_FRAGMENT_SHADER, shaderFile)) {
-            return false;
-        }
-    } else {
-        if(!config.fragmentShader->compile(GL_FRAGMENT_SHADER, 0, frag_shader, "<builtin fragment>")) {
-            return false;
-        }
-    }
-
-    config.program = new Program(config.vertexShader, config.fragmentShader);
-    config.program->bindAttribLocation(0, "Pos");
-    config.program->bindAttribLocation(1, "UV");
-    if(!config.program->link()) {
-        return false;
-    }
+    config.vertexShader = config.fragmentShader = nullptr;
+    config.program = nullptr;
+    bool success = loadShader(config, shaderFile);
+    //bool success = loadErrorShader(config);
 
     CHECK_GL(glDisableVertexAttribArray(0));
     CHECK_GL(glDisableVertexAttribArray(1));
     CHECK_GL(glBindVertexArray(0));
     
+    return success;
+}
 
+bool loadErrorShader(ShadeConfig& config) {
+    Shader* vertexShader = new Shader;
+    if(!vertexShader->compile(GL_VERTEX_SHADER, 0, vertex_shader, "<builtin vertex>")) {
+        delete vertexShader;
+        return false;
+    }
+
+    Shader* fragmentShader = new Shader;
+    if(!fragmentShader->compile(GL_FRAGMENT_SHADER, 0, error_frag_shader, "<builtin error fragment>")) {
+        delete vertexShader;
+        delete fragmentShader;
+        return false;
+    }
+
+    Program* program = new Program(vertexShader, fragmentShader);
+    program->bindAttribLocation(0, "Pos");
+    program->bindAttribLocation(1, "UV");
+    if(!program->link()) {
+        delete program;
+        delete vertexShader;
+        delete fragmentShader;
+        return false;
+    }
+
+    if(config.program) { delete config.program; }
+    if(config.vertexShader) { delete config.vertexShader; }
+    if(config.fragmentShader) { delete config.fragmentShader; }
+    
+    config.vertexShader = vertexShader;
+    config.fragmentShader = fragmentShader;
+    config.program = program;
+    return true;
+}
+
+bool loadShader(ShadeConfig& config, const char* shaderFile) {
+    Shader* vertexShader = new Shader;
+    if(!vertexShader->compile(GL_VERTEX_SHADER, 0, vertex_shader, "<builtin vertex>")) {
+        delete vertexShader;
+        loadErrorShader(config);
+        return false;
+    }
+
+    Shader* fragmentShader = new Shader;
+    if(shaderFile) {
+        if(!fragmentShader->compile(GL_FRAGMENT_SHADER, shaderFile)) {
+            delete vertexShader;
+            delete fragmentShader;
+            loadErrorShader(config);
+            return false;
+        }
+    } else {
+        if(!fragmentShader->compile(GL_FRAGMENT_SHADER, 0, frag_shader, "<builtin fragment>")) {
+            delete vertexShader;
+            delete fragmentShader;
+            loadErrorShader(config);
+            return false;
+        }
+    }
+
+    Program* program = new Program(vertexShader, fragmentShader);
+    program->bindAttribLocation(0, "Pos");
+    program->bindAttribLocation(1, "UV");
+    if(!program->link()) {
+        delete program;
+        delete vertexShader;
+        delete fragmentShader;
+        loadErrorShader(config);
+        return false;
+    }
+
+    if(config.program) { delete config.program; }
+    if(config.vertexShader) { delete config.vertexShader; }
+    if(config.fragmentShader) { delete config.fragmentShader; }
+    
+    config.vertexShader = vertexShader;
+    config.fragmentShader = fragmentShader;
+    config.program = program;
     return true;
 }
 
@@ -195,6 +275,7 @@ GLFWwindow* setupGLFW() {
     if (!glfwInit())
         return NULL;
 
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
