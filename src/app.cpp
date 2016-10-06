@@ -13,6 +13,8 @@ ShadeApp::ShadeApp() {
 	_builtinVertexShader = nullptr;
 	_builtinDefaultShader = nullptr;
 	_builtinErrorShader = nullptr;
+
+    _showFramerate = true;
 }
 
 ShadeApp::~ShadeApp() {
@@ -158,6 +160,8 @@ bool ShadeApp::loadErrorShader() {
 
 bool ShadeApp::loadFragmentShader(const char* shaderFile) {
 	_currentShaderFile = shaderFile;
+	_currentShaderFileTimestamp = fwatch::ZERO_TIMESTAMP;
+	fwatch::checkFileModified(shaderFile, &_currentShaderFileTimestamp);
 
     Shader* fragmentShader = new Shader;
     
@@ -213,7 +217,16 @@ bool ShadeApp::setupGLFW(const char* title) {
 }
 
 int ShadeApp::runLoop() {
+	double lastFilePollTime = glfwGetTime();
     while (!glfwWindowShouldClose(_window)) {
+    	// Poll for file change
+    	if(_currentShaderFile && glfwGetTime() - lastFilePollTime > 1.0) {
+    		if (fwatch::checkFileModified(_currentShaderFile, &_currentShaderFileTimestamp)) {
+    			loadFragmentShader(_currentShaderFile);
+    		}
+    		lastFilePollTime = glfwGetTime();
+    	}
+
         ImGui_ImplGlfwGL3_NewFrame();
 
         ////////// BEGIN FRAME ///////////

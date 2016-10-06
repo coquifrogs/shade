@@ -14,4 +14,14 @@ void ShadeApp::drawUI() {
     }
     
     ImGui::EndMainMenuBar();
+
+    // Framerate overlay
+    ImGui::SetNextWindowPos(ImVec2(10,30));
+    if (!ImGui::Begin("", &_showFramerate, ImVec2(0,0), 0.3f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings))
+    {
+        ImGui::End();
+        return;
+    }
+    ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+    ImGui::End();
 }

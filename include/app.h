@@ -8,6 +8,8 @@
 
 #include "shader.h"
 
+#include "file_watching.h"
+
 class ShadeApp {
 public:
 	ShadeApp();
@@ -38,6 +40,7 @@ private:
     GLFWwindow* _window;
 
     const char* _currentShaderFile;
+    fwatch::Timestamp _currentShaderFileTimestamp;
 
     uint16_t _windowWidth;
     uint16_t _windowHeight;
@@ -47,4 +50,6 @@ private:
     Shader* _builtinDefaultShader;
 
     GLint _uniform_Time;
+
+    bool _showFramerate;
 };
