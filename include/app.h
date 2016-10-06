@@ -10,7 +10,7 @@
 
 #include "file_watching.h"
 
-#define MENUBAR_SIZE 19
+#define MENUBAR_HEIGHT 19
 
 class ShadeApp {
 public:
@@ -52,6 +52,8 @@ private:
     Shader* _builtinDefaultShader;
 
     GLint _uniform_Time;
+    GLint _uniform_Resolution;
+    GLint _uniform_Mouse;
 
     bool _showFramerate;
 };

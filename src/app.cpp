@@ -144,7 +144,9 @@ bool ShadeApp::relinkProgram() {
     
     _program = program;
 
-    _uniform_Time = glGetUniformLocation(_program->getID(), "Time");
+    _uniform_Time = glGetUniformLocation(_program->getID(), "iTime");
+    _uniform_Resolution = glGetUniformLocation(_program->getID(), "iResolution");
+    _uniform_Mouse = glGetUniformLocation(_program->getID(), "iMouse");
 
     return true;
 }
@@ -192,7 +194,7 @@ bool ShadeApp::setupGLFW(const char* title) {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    _window = glfwCreateWindow(_windowWidth, _windowHeight + MENUBAR_SIZE, title, NULL, NULL);
+    _window = glfwCreateWindow(_windowWidth, _windowHeight + MENUBAR_HEIGHT, title, NULL, NULL);
     if (!_window)
     {
         glfwTerminate();
@@ -240,8 +242,17 @@ int ShadeApp::runLoop() {
         _program->use();
 
         if (_uniform_Time != -1) {
-           glUniform1f(_uniform_Time, glfwGetTime());
+            glUniform1f(_uniform_Time, glfwGetTime());
         }
+        if (_uniform_Resolution != -1) {
+            glUniform2f(_uniform_Resolution, (float)_windowWidth, (float)_windowHeight);
+        }
+        if (_uniform_Mouse != -1) {
+            double x, y;
+            glfwGetCursorPos(_window, &x, &y);
+            glUniform2f(_uniform_Mouse, (float)x, (float)y - MENUBAR_HEIGHT);
+        }
+
 
         CHECK_GL(glBindVertexArray(_vao));
         CHECK_GL(glEnableVertexAttribArray(0));

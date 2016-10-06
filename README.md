@@ -5,10 +5,13 @@ Shade is a simple ShaderToy-esque GLSL renderer.  It's currently a work in progr
 TODO:
 - [x] Rendering with UV coordinates
 - [x] Loading fragment shader files
-- [ ] Built-in variables (time, resolution, mouse, etc.)
+- [x] Live reloading of shaders
+- [x] Show framerate
+- [x] Built-in variables (time, resolution, mouse)
 - [ ] dear imgui control of shader parameters
 - [ ] Loading textures 
 - [ ] Export video
+- [ ] Full ShaderToy compatibility
 
 
 ## Compiling
