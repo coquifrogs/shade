@@ -192,7 +192,7 @@ bool ShadeApp::setupGLFW(const char* title) {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    _window = glfwCreateWindow(_windowWidth, _windowHeight, title, NULL, NULL);
+    _window = glfwCreateWindow(_windowWidth, _windowHeight + MENUBAR_SIZE, title, NULL, NULL);
     if (!_window)
     {
         glfwTerminate();
@@ -234,6 +234,8 @@ int ShadeApp::runLoop() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         drawUI();
+
+        glViewport(0,0,_windowWidth,_windowHeight);
 
         _program->use();
 

@@ -10,6 +10,8 @@
 
 #include "file_watching.h"
 
+#define MENUBAR_SIZE 19
+
 class ShadeApp {
 public:
 	ShadeApp();

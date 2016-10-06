@@ -9,8 +9,13 @@ int main(int argc, const char* argv[]) {
     bool verbose = false;
     const char* shaderFile;
 
+    int windowWidth = 800;
+    int windowHeight = 600;
+
     cli::Parser parser = {
-        cli::OptionFlag('v', "verbose", "output logging info", &verbose)
+        cli::OptionFlag('v', "verbose", "output logging info", &verbose),
+        cli::OptionInt('w', "width", "window width", false, &windowWidth),
+        cli::OptionInt('h', "height", "window height", false, &windowHeight)
     };
 
     if(!parser.parse(argc, argv)) {
@@ -32,7 +37,7 @@ int main(int argc, const char* argv[]) {
         loguru::g_stderr_verbosity = loguru::Verbosity_OFF;
     }
 
-    if(!app.init("Shade", 800, 600)) {
+    if(!app.init("Shade", windowWidth, windowHeight)) {
         return EXIT_FAILURE;
     }
 
