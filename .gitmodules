@@ -16,3 +16,6 @@
 [submodule "3rdparty/loguru"]
 	path = 3rdparty/loguru
 	url = https://github.com/emilk/loguru.git
+[submodule "coquilib"]
+	path = coquilib
+	url = https://github.com/coquifrogs/coquilib.git

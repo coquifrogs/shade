@@ -13,6 +13,7 @@ project (shade)
 
 include_directories(
 	include/
+	coquilib/
 	3rdparty/
 	3rdparty/glfw/include
 	3rdparty/glm
